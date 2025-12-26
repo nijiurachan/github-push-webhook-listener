@@ -9,7 +9,7 @@ export class PushHandler {
     constructor(private paths: Map<string, string>) {}
 
     /** Registers webhook listener */
-    listenTo(hooks: Webhooks<unknown>) {
+    listenTo(hooks: Webhooks<unknown>): void {
         hooks.on("push", (event) => this.pullRepo(event))
         hooks.onError((event) => console.error(event))
     }
