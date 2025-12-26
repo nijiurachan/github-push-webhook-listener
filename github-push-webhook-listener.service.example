@@ -1,0 +1,19 @@
+[Unit]
+Description=GitHub Push Webhook Listener
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/app/github-push-webhook-listener
+ExecStart=/usr/bin/bun --env-file=deploy.env run .
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# Configuration should be set in deploy.env file (see example.env for example)
+# PORT: Port to listen on
+# HOOK_SCRIPTS: JSON object that maps branch names to hook scripts
+# URL_PATH: URL path of the webhook
+# WEBHOOK_SECRET: Webhook secret

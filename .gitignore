@@ -1,3 +1,7 @@
+# Local configuration files
+*.env
+*.service
+
 # dependencies (bun install)
 node_modules
 
