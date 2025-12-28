@@ -4,7 +4,7 @@ Bunの練習に作った、GitHubのブランチpush通知をWebhookで受け取
 
 ## インストール
 
-systemdのユーザサービスとしてインストールする例です。前提として、Bunがインストールされている必要があります。
+systemdサービスとしてインストールする例です。前提として、Bunがインストールされている必要があります。
 
 ```bash
 # 環境に合わせサンプル設定ファイルを編集
@@ -14,11 +14,12 @@ nano github-push-webhook-listener.service
 nano deploy.env
 
 # サービスを登録して起動
-mkdir -p ~/.config/systemd/user
-ln -s github-push-webhook-listener.service ~/.config/systemd/user/github-push-webhook-listener.service
-systemctl --user daemon-reload
-systemctl --user enable github-push-webhook-listener
-systemctl --user start github-push-webhook-listener
+sudo chown root:root github-push-webhook-listener.service
+mv github-push-webhook-listener.service /etc/systemd/system/
+ln -s /etc/systemd/system/github-push-webhook-listener.service .
+systemctl daemon-reload
+systemctl enable github-push-webhook-listener
+systemctl start github-push-webhook-listener
 ```
 
 ## 設定が必要な箇所
