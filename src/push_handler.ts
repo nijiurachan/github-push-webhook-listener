@@ -17,7 +17,7 @@ export class PushHandler {
     /**
      * Handles push events from GitHub. Runs update script for the specified ref if it's configured.
      */
-    private pullRepo(event: EmitterWebhookEvent<"push">): void {
+    private async pullRepo(event: EmitterWebhookEvent<"push">): Promise<void> {
         const { ref, before, after } = event.payload
 
         const path = this.paths.get(ref.replace(/^refs\/heads\//, ""))
@@ -27,19 +27,19 @@ export class PushHandler {
         }
 
         console.info(`Running update script for ${ref}`)
-        this.runUpdate(path, ref, before, after)
+        await this.runUpdate(path, ref, before, after)
     }
 
     /**
      * Runs update script for the specified path
      */
-    private runUpdate(
+    private async runUpdate(
         script: string,
         ref: string,
         before: string,
         after: string,
-    ): void {
-        if (!exists(script)) {
+    ): Promise<void> {
+        if (!await exists(script)) {
             throw Error(`Script ${script} does not exist`)
         }
         console.info({
