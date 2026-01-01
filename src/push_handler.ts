@@ -39,7 +39,7 @@ export class PushHandler {
         before: string,
         after: string,
     ): Promise<void> {
-        if (!await exists(script)) {
+        if (!(await exists(script))) {
             throw Error(`Script ${script} does not exist`)
         }
         console.info({
