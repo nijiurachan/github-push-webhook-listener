@@ -49,7 +49,7 @@ export function parseEnvConfig({
         return { urlPath, secret, scripts }
     } catch (e) {
         throw Error(
-            `Specify HOOK_SCRIPTS as a JSON object (e.g. HOOK_SCRIPTS='{"main": "/var/www/myapp-prod/update_deploy.sh", "dev": "/var/www/myapp-devel/update_deploy.sh"}')`,
+            `Specify HOOK_SCRIPTS as a JSON object (e.g. HOOK_SCRIPTS='{"nijiurachan/myapp:main": "/var/www/myapp-prod/update_deploy.sh", "nijiurachan/myapp:dev": "/var/www/myapp-devel/update_deploy.sh"}')`,
             { cause: e },
         )
     }

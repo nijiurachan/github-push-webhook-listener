@@ -18,16 +18,43 @@ export class PushHandler {
      * Handles push events from GitHub. Runs update script for the specified ref if it's configured.
      */
     private async pullRepo(event: EmitterWebhookEvent<"push">): Promise<void> {
-        const { ref, before, after } = event.payload
+        const { ref, repository, before, after } = event.payload
 
-        const path = this.paths.get(ref.replace(/^refs\/heads\//, ""))
-        if (!path) {
-            console.info(`Not configured for ${ref} Ignoring`)
+        if (!repository?.owner?.login) {
+            console.info("No repository information in webhook payload")
             return
         }
 
-        console.info(`Running update script for ${ref}`)
+        const branchName = ref.replace(/^refs\/heads\//, "")
+        const fullKey = `${repository.owner.login}/${repository.name}:${ref}`
+        const path = this.findScript([
+            branchName,
+            ref,
+            `${repository.name}:${ref}`,
+            fullKey,
+            `${repository.owner.login}/${repository.name}:${branchName}`,
+        ])
+        if (!path) {
+            console.info(`Not configured for ${fullKey}. Ignoring.`)
+            return
+        }
+
+        console.info(`Running update script for ${fullKey}`)
         await this.runUpdate(path, ref, before, after)
+    }
+
+    findScript(pathCandidates: string[]): string | undefined {
+        const matchingPaths = pathCandidates.filter((candidate) =>
+            this.paths.has(candidate),
+        )
+
+        if (1 < matchingPaths.length) {
+            throw new Error(
+                `Ambiguous configuration: multiple matches found for ${pathCandidates.join(", ")}.`,
+            )
+        }
+
+        return this.paths.get(matchingPaths[0] ?? "")
     }
 
     /**

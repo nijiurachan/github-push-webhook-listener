@@ -33,7 +33,7 @@ systemctl start github-push-webhook-listener
 | `deploy.env` | `PORT` | 待ち受けポート番号を設定してください。 |
 | `deploy.env` | `URL_PATH` | Webhookを待ち受けるURLパスを設定してください。 |
 | `deploy.env` | `WEBHOOK_SECRET` | Webhookのシークレットを設定してください。 |
-| `deploy.env` | `HOOK_SCRIPTS` | ブランチ名とそのブランチがpushされたときに実行するシェルスクリプトのペアをJSON形式で指定してください。<br>例: `{"main": "/var/www/app/myapp-main/cli/update.sh"}` |
+| `deploy.env` | `HOOK_SCRIPTS` | ブランチがpushされたときに実行するシェルスクリプトのペアをJSON形式で指定してください。<br>ブランチは`<user>/<repo>:<branch>`,`<repo>:<branch>`,`<branch>`のいずれかの形式で指定できます。<br>例: `{"nijiurachan/myapp:main": "/var/www/app/myapp-main/cli/update.sh"}` |
 
 環境変数は`systemctl edit`で設定することもできますが、JSONのエスケープが不便なので`deploy.env`ファイルで設定することをお勧めします。
 
