@@ -43,14 +43,14 @@ export class PushHandler {
         await this.runUpdate(path, ref, before, after)
     }
 
-    findScript(pathCandidates: string[]): string | undefined {
-        const matchingPaths = pathCandidates.filter((candidate) =>
+    findScript(keys: string[]): string | undefined {
+        const matchingPaths = keys.filter((candidate) =>
             this.paths.has(candidate),
         )
 
         if (1 < matchingPaths.length) {
             throw new Error(
-                `Ambiguous configuration: multiple matches found for ${pathCandidates.join(", ")}.`,
+                `Ambiguous configuration: multiple matches found for ${keys.join(", ")}.`,
             )
         }
 
