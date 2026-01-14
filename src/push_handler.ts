@@ -1,50 +1,49 @@
-import { exists } from "node:fs/promises"
-import type { EmitterWebhookEvent, Webhooks } from "@octokit/webhooks"
-import { spawn } from "bun"
+import type { IScriptFinder, IScriptRunner, ScriptLookupContext } from "./types"
+
+/** Info about a push event from GitHub Webhook */
+export type PushInfo = {
+    ref: string
+    before: string
+    after: string
+    repository: {
+        name: string
+        full_name: string
+    }
+}
 
 /**
  * Handles webhook requests from GitHub
  */
 export class PushHandler {
-    constructor(private paths: Map<string, string>) {}
-
-    /** Registers webhook listener */
-    listenTo(hooks: Webhooks<unknown>): void {
-        hooks.on("push", (event) => this.pullRepo(event))
-        hooks.onError((event) => console.error(event))
-    }
+    constructor(
+        private readonly scriptFinder: IScriptFinder,
+        private readonly scriptRunner: IScriptRunner,
+    ) {}
 
     /**
      * Handles push events from GitHub. Runs update script for the specified ref if it's configured.
      */
-    private async pullRepo(event: EmitterWebhookEvent<"push">): Promise<void> {
-        const { ref, before, after } = event.payload
+    async pullRepo({
+        ref,
+        repository,
+        before,
+        after,
+    }: PushInfo): Promise<void> {
+        const context = {
+            ref,
+            repoName: repository.name,
+            fullName: repository.full_name,
+        } satisfies ScriptLookupContext
 
-        const path = this.paths.get(ref.replace(/^refs\/heads\//, ""))
+        const fullKey = this.scriptFinder.makeKey(context)
+        const path = this.scriptFinder.findScript(context)
+
         if (!path) {
-            console.info(`Not configured for ${ref} Ignoring`)
+            console.info(`Not configured for ${fullKey}. Ignoring.`)
             return
         }
 
-        console.info(`Running update script for ${ref}`)
-        await this.runUpdate(path, ref, before, after)
-    }
-
-    /**
-     * Runs update script for the specified path
-     */
-    private async runUpdate(
-        script: string,
-        ref: string,
-        before: string,
-        after: string,
-    ): Promise<void> {
-        if (!(await exists(script))) {
-            throw Error(`Script ${script} does not exist`)
-        }
-        console.info({
-            spawn: `/bin/bash -- ${script} ${ref} ${before} ${after}`,
-        })
-        spawn([`/bin/bash`, "--", script, ref, before, after]).unref()
+        console.info(`Running update script for ${fullKey}`)
+        await this.scriptRunner.runUpdate(path, context.ref, before, after)
     }
 }
