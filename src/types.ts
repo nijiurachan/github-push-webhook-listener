@@ -24,7 +24,7 @@ export interface IScriptFinder {
 export type ScriptLookupContext = {
     ref: string
     repoName: string
-    userName: string
+    fullName: string
 }
 
 /**

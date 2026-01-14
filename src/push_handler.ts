@@ -7,9 +7,7 @@ export type PushInfo = {
     after: string
     repository: {
         name: string
-        owner: null | {
-            login?: string
-        }
+        full_name: string
     }
 }
 
@@ -31,14 +29,10 @@ export class PushHandler {
         before,
         after,
     }: PushInfo): Promise<void> {
-        if (!repository.name || !repository.owner?.login) {
-            console.info("No repository information in webhook payload")
-            return
-        }
         const context = {
             ref,
             repoName: repository.name,
-            userName: repository.owner.login,
+            fullName: repository.full_name,
         } satisfies ScriptLookupContext
 
         const fullKey = this.scriptFinder.makeKey(context)

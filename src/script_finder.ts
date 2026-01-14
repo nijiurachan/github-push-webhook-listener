@@ -3,19 +3,19 @@ import type { IScriptFinder, ScriptLookupContext } from "./types"
 export class ScriptFinder implements IScriptFinder {
     constructor(private paths: Map<string, string>) {}
 
-    makeKey({ ref, repoName, userName }: ScriptLookupContext): string {
-        return `${userName}/${repoName}:${ref}`
+    makeKey({ ref, fullName }: ScriptLookupContext): string {
+        return `${fullName}:${ref}`
     }
 
     findScript(context: ScriptLookupContext): string | undefined {
-        const { ref, repoName, userName } = context
+        const { ref, repoName, fullName } = context
         const branchName = ref.replace(/^refs\/heads\//, "")
         return this.match([
             branchName,
             ref,
+            this.makeKey(context),
             `${repoName}:${ref}`,
-            this.makeKey({ ref, repoName, userName }),
-            `${userName}/${repoName}:${branchName}`,
+            `${fullName}:${branchName}`,
         ])
     }
 
