@@ -13,9 +13,10 @@ export class ScriptFinder implements IScriptFinder {
         return this.match([
             branchName,
             ref,
-            this.makeKey(context),
+            `${repoName}:${branchName}`,
             `${repoName}:${ref}`,
             `${fullName}:${branchName}`,
+            this.makeKey(context),
         ])
     }
 
