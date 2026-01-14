@@ -1,11 +1,12 @@
 .PHONY: all format check
 
+NPM=bun
+
 all: format check
 	@echo See README.md for installation instructions
 
 format:
-	bun x biome check --fix
+	$(NPM) run $@
 
 check:
-	bun x biome check
-	bun x tsc --noEmit
+	$(NPM) run $@
