@@ -16,3 +16,5 @@ jobs:
         run: bun x biome ci
       - name: Check types
         run: bun x tsc --noEmit
+      - name: Run tests
+        run: bun test
