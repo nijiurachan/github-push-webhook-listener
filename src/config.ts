@@ -22,7 +22,7 @@ export function parseEnvConfig({
 }: EnvConfig): AppConfig {
     if (!urlPath || !secret || !hooks) {
         throw Error(
-            "usage: URL_PATH=/webhooks WEBHOOK_SECRET=... HOOK_SCRIPTS='{...}' bun run index.ts",
+            `usage: URL_PATH=/webhooks WEBHOOK_SECRET=... HOOK_SCRIPTS='{...}' bun run .`,
         )
     }
 
