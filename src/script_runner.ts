@@ -1,4 +1,4 @@
-import { exists } from "node:fs/promises"
+import { access, constants, exists } from "node:fs/promises"
 import { spawn } from "bun"
 import type { IScriptRunner } from "./types"
 
@@ -14,7 +14,13 @@ export class ScriptRunner implements IScriptRunner {
         if (!(await exists(script))) {
             throw Error(`Script ${script} does not exist`)
         }
-        const command = [...this.shellCommand, script, ref, before, after]
+
+        const isExecutable = await access(script, constants.X_OK)
+            .then(() => true)
+            .catch(() => false)
+        const prefix = isExecutable ? [] : this.shellCommand
+        const command = [...prefix, script, ref, before, after]
+
         console.info({ spawn: command })
         spawn(command).unref()
     }
